@@ -1,0 +1,45 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.intelygenz.psg01.dao.TareaMapper">
+	
+	<select id="findByPk" resultType="com.intelygenz.psg01.model.Tarea" parameterType="long">
+		select * from tarea where id=#{id}
+	</select>
+	<select id="getAll" resultType="com.intelygenz.psg01.model.Tarea">
+		select * from tarea
+	</select>
+	<select id="findUltimasTareas" resultType="com.intelygenz.psg01.model.Tarea" >
+		select T.* 
+		from tarea T
+		inner join (select id from ronda where codigo = (select MAX(codigo) from ronda)) R on R.id = T.fkIdRonda
+	</select>
+	
+	<insert id="insert" parameterType="com.intelygenz.psg01.model.Tarea">
+		insert into tarea (fkIdRonda,nombre,estado,nameImage,pathImage,image,fechaRegistro) 
+				   values (#{fkIdRonda},#{nombre},#{estado},#{nameImage},#{pathImage},#{image},#{fechaRegistro})
+	</insert>
+	<select id="getLastId" resultType="int" >
+		select id from tarea order by id desc limit 1;
+	</select>
+	<update id="update" parameterType="com.intelygenz.psg01.model.Tarea">
+		update tarea 
+		set	fkIdRonda= #{fkIdRonda},
+			nombre= #{nombre},
+			estado= #{estado},
+			nameImage= #{nameImage},
+			pathImage= #{pathImage},
+			image= #{image},
+			fechaRegistro= #{fechaRegistro}
+		where id = #{id}
+	</update>
+	<update id="updatePath" parameterType="com.intelygenz.psg01.model.Tarea">
+		update tarea set pathImage= #{pathImage} where id = #{id}
+	</update>
+	<delete id="remove" parameterType="com.intelygenz.psg01.model.Tarea">
+		delete from tarea where id=#{id}
+    </delete>
+    <select id="getPaginated" parameterType="map" resultType="com.intelygenz.psg01.model.Tarea">
+    	select * from tarea limit #{maxResult} offset #{startPosition}
+    </select>
+</mapper>

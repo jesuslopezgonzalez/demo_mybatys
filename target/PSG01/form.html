@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+</head>
+<body>
+	<h1>Prueba POST PSG01</h1>
+ 
+	<form action="webapi/service/newtask" method="post" enctype="multipart/form-data">
+ 
+	   <p>
+			Imagen : <input type="file" name="file" size="45" />
+	   </p>
+	   <p>
+			Nombre de tarea : <input type="text" name="nombre" />
+	   </p>
+	   <p>
+ 	   		<input type="text" value="1392371330524" name="codigo"/>
+ 	   		<input type="hidden" value="1392371330000" name="activacion"/>
+ 	   		<input type="hidden" value="1392371330999" name="proceso"/>
+ 	   		<input type="hidden" value="1392371330555" name="aviso"/>
+ 	   </p>
+	   <input type="submit" value="Upload It" />
+	</form>
+</body>
+</html>

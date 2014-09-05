@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Prosegur - Informe de Actuación</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+		<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script type='text/javascript' src="js/jquery.appear.js"></script>
+		
+<script type='text/javascript'>
+
+
+function GetRondaData () {
+	$.ajax({
+		type: "GET",
+        url: "http://psg01.igz.es/webapi/service/list2",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (data, status, jqXHR) {
+        	var Codigo = data[0].codigo;
+        	
+        	var Activacion = GetTime(new Date(data[0].activacion));
+        	var Proceso = GetTime(new Date(data[0].proceso));
+        	var Aviso = GetTime(new Date(data[0].aviso));
+        	
+        	$("#fechaActivacion").append(Activacion);
+        	$("#fechaProceso").append(Proceso);
+        	$("#fechaAviso").append(Aviso);
+        	
+			var a_Tareas = data[0].al_Tarea;
+        	for(var i=0; i< a_Tareas.length;i++){
+	        	var sHTML = DrawTask(a_Tareas[i])
+	           	$("#listado").append(sHTML);
+            }
+        },
+    
+        error: function (jqXHR, status) {           
+        	// error handler
+            alert("Error al recibir datos");
+        }
+     });
+}
+
+/*
+function GetList () {
+
+     $.ajax({
+         type: "GET",
+         url: "http://psg01.igz.es/webapi/service/list",
+         contentType: "application/json; charset=utf-8",
+         dataType: "json",
+         success: function (data, status, jqXHR) {
+              for(var i=0; i< data.length;i++){
+            	  var sHTML = DrawTask(data[i])
+            	  $("#listado").append(sHTML);
+              }
+         },
+    
+         error: function (jqXHR, status) {           
+              // error handler
+              alert("Error al recibir datos");
+         }
+
+     });
+}
+*/
+
+Date.prototype.getHoursTwoDigits = function(){
+    var retval = this.getHours();
+    if (retval < 10){retval = ("0" + retval)}
+    return retval.toString()
+}
+Date.prototype.getMinutesTwoDigits = function(){
+    var retval = this.getMinutes();
+    if (retval < 10){retval = ("0" + retval)}
+    return retval.toString()
+}
+Date.prototype.getSecondsTwoDigits = function(){
+    var retval = this.getSeconds();
+   if (retval < 10){retval = ("0" + retval)}
+    return retval.toString()
+}
+Date.prototype.ParseDate= function(){
+	var meses = new Array ("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+	var sFecha = this.getDate() + " - " + meses[this.getMonth()] +" - "+ this.getFullYear() + " a las "+ this.getHoursTwoDigits()+":"+this.getMinutesTwoDigits()+":"+this.getSecondsTwoDigits();
+	return sFecha;	
+}
+
+function GetTime(dFecha){
+	var sFecha = dFecha.getHoursTwoDigits()+":"+dFecha.getMinutesTwoDigits();
+	return sFecha;	
+}
+
+function DrawTask (tarea){
+	var sHTML = '<article class="card">'
+					  + '<p class="actionTitle">' + tarea['nombre']+'</p>';
+	if(tarea['estado'] == true){
+		sHTML += '<img align="left" src="' + tarea['pathImage'] +'" width="300" class="actionImage"/>'
+			  +  '<p class="actionStatus ok">Completado</p>';
+	}				  
+	else{
+		sHTML += '<p class="actionStatus ko">No Completado</p>';
+	}
+	var dFecha = new Date(tarea['fechaRegistro']);
+	
+		sHTML += '<p class="actionTime">Fecha de registro:</p><p class="actionTime"> ' + dFecha.ParseDate() +'</p>';
+		sHTML += '</article>';
+	return sHTML;
+}
+
+$(document).ready(function() {
+	GetRondaData();
+	//GetList();
+	$(document.body).on('appear', '.card', function(e, $affected) {
+	    // add class called “appeared” for each appeared element
+	    $(this).addClass("appeared");
+	  });
+	  $('.card').appear({force_process: true});
+});
+
+</script>
+
+<style>
+	
+	* { margin: 0; padding: 0; font-family: 'Roboto', Arial; text-shadow: 2px 1px 1px #bdbcba; }
+	
+	body { background: #e4e6e5; }
+	
+	header, article, nav, section, footer, main, aside { display: block; }
+	
+	section { float: left; width: 640px; min-height: 600px; margin-top:10px;}
+	aside { float: right; margin-top:10px;}
+	
+	header { width: 100%; height: 60px; background: #f7d118; }
+	.logo { width: 201px; height: 60px; background: url(pix/logo.png) top left no-repeat; margin-left: 50px; }
+	
+	h1 { font-size: 2.5em; font-weight: 300; color: #000; text-align: center; padding: 10px 0; background: #d2d3d7; box-shadow: 1px 1px 4px #888888; }
+	
+	aside {
+		width: 300px;
+		border: solid 1px #cccccc;
+		font-size: 14px;
+		box-shadow: 1px 1px 4px #888888;
+		padding: 15px;
+		box-sizing:border-box;
+		-moz-box-sizing:border-box;
+		background: #FFF;
+		border-radius:10px;
+	}
+	
+	article {
+		width: 640px;
+		border: solid 1px #cccccc;
+		font-size: 14px;
+		box-shadow: 1px 1px 4px #888888;
+		padding: 15px;
+		box-sizing:border-box;
+		-moz-box-sizing:border-box;
+		overflow: hidden;
+		margin-bottom: 35px;
+		background: #FFF;
+		border-radius:10px;
+	}
+	
+	main {
+		width: 996px;
+		margin: 50px auto;
+	}
+	
+	.card {
+		-webkit-transition: all 400ms ease;
+	    -moz-transition: all 400ms ease;
+	    -o-transition: all 400ms ease;
+	    transition: all 400ms ease;
+	    -webkit-transform:  translate3d(0px, 100px, 0) rotateX(-30deg) scale(1.25, 1.25);
+	    -moz-transform: translate3d(0px, 100px, 0) rotateX(-30deg) scale(1.25, 1.25);
+	    transform: translate3d(0px, 100px, 0) rotateX(-30deg) scale(1.25, 1.25);
+	    opacity: 0;
+	}
+	.card.appeared{
+	    -webkit-transform: translate3d(0px, 0px, 0px) rotateX(0)  scale(1, 1);
+	    -moz-transform:  translate3d(0px, 0px, 0px) rotateX(0)  scale(1, 1);
+	    transform: translate3d(0px, 0px, 0px) rotateX(0)  scale(1, 1);
+	    opacity: 1;
+	}
+	
+	p { font-size: 1.7em; }
+	
+	p.actionTitle { text-transform: uppercase; font-weight: bold; }
+	img.actionImage { margin: 12px 25px 12px 0; box-shadow: 1px 1px 2px #888888; }
+	img.user { margin: 0 8px 0 0; width: 40px; box-shadow: 1px 1px 2px #888888; border-radius:50%; }
+	p.actionStatus { text-transform: uppercase; text-align: right; font-weight: bold; text-shadow: 1px 1px 1px #bdbcba; }
+	p.ok { color: #42ce37; }
+	p.ko { color: #ce3745; }
+	p.actionTime { font-size: 1em; text-align: right; }
+	p.actionWho { text-align: right; margin: 30px 0 0 0; line-height: 1em; }
+	
+	p.userId {font-size: 1em; }
+	
+</style>
+
+<body>
+	
+	<header>
+		<div class="logo"></div>
+	</header>
+	<h1>Informe de Actuación</h1>
+	
+	<main>
+		<section id="listado">
+		 <!-- 
+			<article class="card">
+				<p class="actionTitle">Action Title</p>
+				<img align="left" src="pix/puerta.jpg" width="300" class="actionImage"/>
+				<p class="actionStatus ok">Completado</p>
+				<p class="actionTime">08.00 am 12/02/2014</p>
+				<p class="actionWho"><img class="user" src="pix/silueta.jpg" /><br />Jose Luis Hernández Sánchez</p>
+			</article>
+			<article class="card">
+				<p class="actionTitle">Action Title</p>
+				<p class="actionStatus ko">No Completado</p>
+				<p class="actionTime"> </p>
+				<p class="actionWho"> </p>
+			</article>
+		-->
+		</section>
+		
+		<aside>
+			Prosegur Soluciones Integrales
+			<br />
+			<br />
+			C/ Sepúlveda 3 y 5 28011 
+			<br />
+			Madrid C.C. Barrio Art Decó
+		</aside>
+		</br>
+		<aside>
+			<br />
+			<p class="userId">Vigilante: </p><br />
+			<p class="userId"><img class="user" src="pix/silueta.jpg" align="absmiddle"/>Jose Luis Hernández Sánchez</p><br />
+			<p class="userId">Identificación: X1234-CB</p>
+			<br />
+		</aside>
+		</br>
+		<aside>
+			<br />
+			<p id="fechaActivacion" class="actionTime">Activación: </p>
+			<br />
+			<p id="fechaProceso" class="actionTime">Procesada: </p>
+			<br />
+			<p id="fechaAviso" class="actionTime">Aviso enviado: </p>
+			<br />
+		</aside>
+	</main>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.intelygenz.psg01.dao.RondaMapper">
+	<resultMap type="com.intelygenz.psg01.model.Ronda" id="rondaWithTareas">
+		<id column="id" property="id" javaType="int"/>
+		<result column="codigo" javaType="Long" property="codigo"/>
+		<result column="activacion" javaType="Date" property="activacion"/>
+		<result column="proceso" javaType="Date" property="proceso"/>
+		<result column="aviso" javaType="Date" property="aviso"/>
+		<collection property="al_Tarea" column="fkIdRonda" javaType="ArrayList" ofType="com.intelygenz.psg01.model.Tarea" 
+			resultMap="com.intelygenz.psg01.dao.RondaMapper.tareaResult" columnPrefix="tarea_">
+		</collection>
+	</resultMap>
+	
+	<resultMap type="com.intelygenz.psg01.model.Tarea" id="tareaResult">
+		<id column="id" property="id" javaType="int"/>
+		<result column="nombre" javaType="String" property="nombre"/>
+		<result column="estado" javaType="boolean" property="estado"/>
+		<result column="fkIdRonda" javaType="int" property="fkIdRonda"/>
+		<result column="nameImage" javaType="String" property="nameImage"/>
+		<result column="pathImage" javaType="String" property="pathImage"/>
+		<result column="fechaRegistro" javaType="Date" property="fechaRegistro"/>
+	</resultMap>
+	
+	<select id="findById" resultType="com.intelygenz.psg01.model.Ronda" parameterType="int">
+		select * from ronda where id=#{id}
+	</select>
+	<select id="getByCodigo" resultType="com.intelygenz.psg01.model.Ronda" parameterType="Long">
+		select * from ronda where codigo=#{codigo}
+	</select>
+	<select id="getAll" resultType="com.intelygenz.psg01.model.Ronda">
+		select * from ronda
+	</select>
+	<insert id="insert" parameterType="com.intelygenz.psg01.model.Ronda">
+		INSERT INTO ronda (codigo,activacion,proceso,aviso) VALUES (#{codigo},#{activacion},#{proceso},#{aviso})
+	</insert>
+	<select id="getLastId" resultType="int" >
+		SELECT id FROM ronda ORDER BY id DESC LIMIT 1;
+	</select>
+	<update id="update" parameterType="com.intelygenz.psg01.model.Ronda">
+		update tarea set codigo = #{codigo} where id = #{id}
+	</update>
+	<delete id="remove" parameterType="com.intelygenz.psg01.model.Ronda">
+		delete from ronda where id = #{id}
+    </delete>
+    <select id="getByIdWithTareas" resultMap="rondaWithTareas" parameterType="int">
+    	select R.id, R.codigo,  R.activacion, R.proceso, R.aviso,
+    		T.id as tarea_id, T.nombre as tarea_nombre, T.nameImage as tarea_nameImage, T.pathImage as tarea_pathImage,
+    		T.estado as tarea_estado, T.fkIdRonda as tarea_fkIdRonda,T.fechaRegistro as tarea_fechaRegistro
+    	from ronda R inner join tarea T on T.fkIdRonda = R.id
+    	 where R.id = #{id}
+    </select>
+</mapper>
